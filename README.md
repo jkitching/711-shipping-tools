@@ -26,4 +26,6 @@ EOF
 2024-06-07 15:08:14,871 [DEBUG] Fill row: ['Joel', None, None, None, None, None, 'Some Dude', None, 'somedude@hotmail.com', None, None]
 ```
 
-![Screenshot of resulting bulk upload XLSX file](example.png)
+Here's what `output.xlsx` looks like:
+
+![Screenshot of bulk upload XLSX file](example.png)
