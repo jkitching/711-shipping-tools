@@ -23,21 +23,18 @@ FIELD_NAMES = [
 ]
 
 
-def get_csv_reader(filename, fields):
-    if fields:
-        fields = fields.split(',')
-
+def get_input_reader(filename, fields, delimiter):
     if filename == '-':
-        csv_file = sys.stdin
+        f = sys.stdin
     elif filename:
-        csv_file = open(filename, 'r', encoding='utf-8')
+        f = open(filename, 'r', encoding='utf-8')
     else:
-        csv_file = open('/dev/null', 'r', encoding='utf-8')
+        f = open('/dev/null', 'r', encoding='utf-8')
 
     if fields:
-        reader = csv.DictReader(csv_file, fieldnames=fields)
+        reader = csv.DictReader(f, fieldnames=fields, delimiter=delimiter)
     else:
-        reader = csv.DictReader(csv_file)
+        reader = csv.DictReader(f, delimiter=delimiter)
 
     return reader
 
@@ -55,11 +52,18 @@ def fill_row(row, field_names, default_values):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--template', help='The source xlsx file', required=True)
-    parser.add_argument('--output', help='The output xlsx file', required=True)
-    parser.add_argument('--csv', help='The source csv file')
-    parser.add_argument('--csv-fields', help='Comma-separated csv field names')
-    parser.add_argument('--verbose', action='store_true', help='Verbosity level')
+    parser.add_argument('--template', '-t',
+                        help='The source xlsx file', required=True)
+    parser.add_argument('--output', '-o',
+                        help='The output xlsx file', required=True)
+    parser.add_argument('--input', '-i',
+                        help='The input file, or - for stdin (defaults to TSV)')
+    parser.add_argument('--field', '-f', action='append',
+                        help='A list of field names in the input')
+    parser.add_argument('--delimiter', '-d', default='\t',
+                        help='The delimiter of input file (defaults to tab)')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='Verbosity level')
 
     # Generate CLI arguments programmatically
     for field in FIELD_NAMES:
@@ -75,12 +79,12 @@ def main():
     logging.basicConfig(level=logging_level,
                         format='%(asctime)s [%(levelname)s] %(message)s')
 
-    csv_reader = get_csv_reader(args.csv, args.csv_fields)
+    input_reader = get_input_reader(args.input, args.field, args.delimiter)
     default_values = {field: getattr(args, field) for field in FIELD_NAMES}
 
-    # Create a list of rows, filling in missing fields from field_names
+    # Create a list of rows, filling in missing fields from command-line args
     rows = []
-    for row in csv_reader:
+    for row in input_reader:
         rows.append([None] + fill_row(row, FIELD_NAMES, default_values))
     if not rows:
         rows.append([None] + fill_row([], FIELD_NAMES, default_values))
