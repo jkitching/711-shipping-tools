@@ -63,7 +63,9 @@ def main():
 
     # Generate CLI arguments programmatically
     for field in FIELD_NAMES:
-        parser.add_argument('--' + field, help='The ' + field.replace('_', ' '))
+        arg_name = '--' + field.replace('_', '-')
+        help_str = 'Default value for ' + field.replace('_', ' ')
+        parser.add_argument(arg_name, help=help_str)
 
     # Parse arguments
     args = parser.parse_args()

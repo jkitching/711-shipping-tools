@@ -17,7 +17,7 @@ $ ./create_bulk_xlsx.py \
     --verbose \
     --template bulk_template.xlsx \
     --output output.xlsx \
-    --sender_name 'Joel' \
+    --sender-name 'Joel' \
     --csv - \
     --csv-fields 'receiver_name,receiver_email' << EOF
 Some Dude,somedude@hotmail.com
